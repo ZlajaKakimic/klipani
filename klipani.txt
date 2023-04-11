@@ -1,0 +1,887 @@
+def boyer_moore(T, P):
+    n = len(T)
+    m = len(P)
+    last = {}
+    # abacab
+    for i in range(m):
+        last[P[i]] = i
+    i = m-1
+    j = m-1
+    while i < n:
+        if T[i] == P[j]:
+            if j == 0:
+                return i
+            i -= 1
+            j -= 1
+        else:
+            l = last.get(T[i], -1)
+            i += m - min(j, l+1)
+            j = m - j
+    return -1
+
+
+print(boyer_moore("tiieailaweq", "la"))
+
+
+
+
+
+
+
+def brute_force(T, P):
+    n = len(T)
+    m = len(P)
+    for i in range(n-m+1):
+        j = 0
+        while j < m and T[i+j] == P[j]:
+            j += 1
+            if j == m:
+                return i
+    return -1
+
+
+print(brute_force("Pera Peric", "ric"))
+
+
+
+
+
+
+
+
+def fail(P):
+    m = len(P)
+    failed = [0] * m
+    k = 0
+    i = 1
+    while i < m:
+        if P[i] == P[k]:
+            failed[i] = k + 1
+            k += 1
+            i += 1
+        elif k > 0:
+            k = failed[k-1]
+        else:
+            i += 1
+    return failed  # atzo
+
+
+def kmp(T, P):
+    n = len(T)
+    m = len(P)
+    failed = fail(P)
+    j = 0
+    k = 0
+    while j < n:
+        if T[j] == P[k]:
+            if k == m - 1:
+                return j-k
+            j += 1
+            k += 1
+        elif k > 0:
+            k = failed[k-1]
+        else:
+            j += 1
+    return -1
+
+
+print(kmp("Pera Peric", "Peric"))
+
+
+
+
+
+
+
+
+def bubble_sort(array):
+    n = len(array)
+    for i in range(n-1):
+        for j in range(0, n-i-1):
+            if array[j] > array[j + 1] :
+                array[j], array[j + 1] = array[j + 1], array[j]
+
+if __name__ == "__main__":
+    array = [2, 6, 7, 8, 1, 3, 9, 9, 4]
+    bubble_sort(array)
+    print(array)
+
+
+
+
+
+
+
+
+from pqueue import SortedPriorityQueue
+
+def pq_sort(A):
+    size = len(A)
+    pq = SortedPriorityQueue()
+
+    for i in range(size):
+        element = A.pop()
+        pq.add(element, element)
+
+    for i in range(size):
+        (k, v) = pq.remove_min()
+        A.append(v)
+
+def insertion_sort(array):
+    n = len(array)
+    for i in range(1, n):
+        curr = array[i]
+        j = i-1
+        while j >=0 and curr < array[j]:
+            array[j+1] = array[j]
+            j -= 1
+        array[j+1] = curr
+
+if __name__ == "__main__":
+    array = [2, 6, 7, 8, 1, 3, 9, 9, 4]
+    pq_sort(array)
+    print(array)
+
+
+
+
+
+
+
+
+
+from queue import Queue
+
+def merge(L, R):
+
+    n = len(L)
+    m = len(R)
+
+    i = 0
+    j = 0
+
+    sorted = []
+
+    while i < n and j < m:
+        if L[i] < R[j]:
+            sorted.append(L[i])
+            i += 1
+        else:
+            sorted.append(R[j])
+            j += 1
+
+    if i < n:
+        sorted.extend(L[i:])
+    else:
+        sorted.extend(R[j:])
+
+    return sorted
+
+
+def merge_sort(array):
+    n = len(array)
+    if n == 1:
+        return array
+
+    mid = n//2
+    L = merge_sort(array[:mid])
+    R = merge_sort(array[mid:])
+
+    return merge(L, R)
+
+def merge_v2(S1, S2, S):
+    while not S1.is_empty() and not S2.is_empty():
+        if S1.first() < S2.first():
+            S.enqueue(S1.dequeue())
+        else:
+            S.enqueue(S2.dequeue())
+    while not S1.is_empty():
+        S.enqueue(S1.dequeue())
+    while not S2.is_empty():
+        S.enqueue(S2.dequeue())
+     
+def merge_sort_v2(S):
+    n = len(S)
+    if n < 2:
+        return
+    # podeli
+    S1 = Queue()
+    S2 = Queue()
+    while len(S1) < n // 2:
+        S1.enqueue(S.dequeue())
+    while not S.is_empty():
+        S2.enqueue(S.dequeue())
+    merge_sort_v2(S1)
+    merge_sort_v2(S2)
+    merge_v2(S1, S2, S)
+
+def merge_v3(S1, S2, S):
+    i=j=0
+    while i + j < len(S):
+        if j == len(S2) or (i < len(S1) and S1[i] < S2[j]):
+            S[i+j] = S1[i]
+            i += 1
+        else:
+            S[i+j] = S2[j]
+            j += 1
+
+def merge_sort_v3(S):
+    n = len(S)
+    if n < 2:
+        return
+    mid = n // 2
+    S1 = S[0:mid]
+    S2 = S[mid:n]
+    merge_sort_v3(S1)
+    merge_sort_v3(S2)
+    merge_v3(S1, S2, S)
+
+if __name__ == "__main__":
+    array = [2, 6, 7, 8, 1, 3, 9, 9, 4]
+    #print(merge_sort(array))
+    merge_sort_v3(array)
+    print(array)
+
+    # q = Queue()
+    # q.enqueue(2)
+    # q.enqueue(6)
+    # q.enqueue(7)
+    # q.enqueue(8)
+    # q.enqueue(1)
+    # q.enqueue(3)
+    # q.enqueue(9)
+    # q.enqueue(9)
+    # q.enqueue(4)
+    # merge_sort_v2(q)
+    # print(q._data)
+
+
+
+
+
+
+
+
+
+
+class PQError(Exception):
+    pass
+
+
+class PQItem(object):
+    __slots__ = '_key', '_value'
+
+    def __init__(self, key, value):
+        self._key = key
+        self._value = value
+
+    def get_key(self):
+        return self._key
+
+    def get_value(self):
+        return self._value
+
+    def __lt__(self, x):
+        return self._key < x._key
+
+    def __str__(self):
+        return "(" + str(self._key) + ")"
+
+
+class PriorityQueueBase(object):
+
+    def __init__(self):
+        self._data = []
+
+    def __len__(self):
+        return len(self._data)
+
+    def __str__(self):
+        return ', '.join('(%s, %s)' % (e._key, e._value) for e in self._data)
+
+    def is_empty(self):
+        return len(self) == 0
+
+
+class SortedPriorityQueue(PriorityQueueBase):
+
+    def __init__(self):
+        # super().__init__()
+        super(SortedPriorityQueue, self).__init__()
+
+    def min(self):
+        if self.is_empty():
+            raise PQError('Red je prazan.')
+
+        min_item = self._data[0]
+        return (min_item._key, min_item._value)
+
+    def remove_min(self):
+        if self.is_empty():
+            raise PQError('Red je prazan.')
+
+        removed = self._data.pop(0)
+        return (removed._key, removed._value)
+
+    def add(self, key, value):
+        new_item = PQItem(key, value)
+
+        last = len(self)-1
+        position = 0
+
+        for i in range(last, -1, -1):
+            current_item = self._data[i]
+            if not new_item < current_item:
+                position = i+1
+                break
+
+        self._data.insert(position, new_item)
+
+
+class UnsortedPriorityQueue(PriorityQueueBase):
+
+    def __init__(self):
+        super(UnsortedPriorityQueue, self).__init__()
+
+    def _find_min(self):
+        if self.is_empty():
+            raise PQError('Red je prazan.')
+
+        min_item = self._data[0]
+        size = len(self)
+        for i in range(1, size):
+            current_item = self._data[i]
+            if current_item < min_item:
+                min_item = current_item
+
+        return min_item
+
+    def min(self):
+        min_item = self._find_min()
+        return (min_item._key, min_item._value)
+
+    def remove_min(self):
+        min_item = self._find_min()
+        index = self._data.index(min_item)
+        removed = self._data.pop(index)
+        return (removed._key, removed._value)
+
+    def add(self, key, value):
+        new_item = PQItem(key, value)
+        self._data.append(new_item)
+
+
+if __name__ == '__main__':
+    upq = UnsortedPriorityQueue()
+    upq.add(3, 'abc')
+    upq.add(2, 'ab')
+    upq.add(1, 'a')
+    upq.add(11, 'abcdefghijk')
+
+    print('------------------------------')
+    print('UNSORTED PRIORITY QUEUE')
+    print('------------------------------')
+    print('Content: %s' % upq)
+    print('Minimum: (%s, %s)' % upq.min())
+    print('------------------------------')
+    print('Removed (%s, %s)' % upq.remove_min())
+    print('------------------------------')
+    print('Content: %s' % upq)
+    print('Minimum: (%s, %s)' % upq.min())
+    print('------------------------------')
+    spq = SortedPriorityQueue()
+    spq.add(3, 'abc')
+    spq.add(2, 'ab')
+    spq.add(1, 'a')
+    spq.add(11, 'abcdefghijk')
+
+    print('\n------------------------------')
+    print('SORTED PRIORITY QUEUE')
+    print('------------------------------')
+    print('Content: %s' % spq)
+    print('Minimum: (%s, %s)' % spq.min())
+    print('------------------------------')
+    print('Removed (%s, %s)' % spq.remove_min())
+    print('------------------------------')
+    print('Content: %s' % spq)
+    print('Minimum: (%s, %s)' % spq.min())
+
+
+
+
+
+
+
+
+
+
+
+from pqueue import UnsortedPriorityQueue
+
+def pq_sort(A):
+    size = len(A)
+    pq = UnsortedPriorityQueue()
+
+    for i in range(size):
+        element = A.pop()
+        pq.add(element, element)
+
+    for i in range(size):
+        (k, v) = pq.remove_min()
+        A.append(v)
+
+def selection_sort(array):
+
+    for i in range(len(array)):
+
+        min_i = i
+        for j in range(i+1, len(array)):
+            if array[min_i] > array[j]:
+                min_i = j
+   
+        array[i], array[min_i] = array[min_i], array[i]
+
+if __name__ == "__main__":
+    array = [2, 6, 7, 8, 1, 3, 9, 9, 4]
+    pq_sort(array)
+    print(array)
+
+
+
+
+
+
+
+
+
+
+Import SinglyLinkedList
+class Error(Exception):
+class Queue(object):
+Definisi: init, len, first, dequeue i enqueue
+__init__(self)
+
+    self._data = SinglyLinkedList()
+
+__len__(self)
+    return len(self._data)
+
+is_empty(self)
+    return len(self._data) == 0
+first(self)
+    if self.is_empty():
+        raise Error
+    return self._data.get_first()
+dequeue(self)
+    if self.is_empty():
+        raise Error
+    el = self._data.get_first()
+    self._data.remove_first()
+    return element
+enqueue(self,e)
+    self._data.add_last(e)
+
+
+
+
+
+
+
+
+
+class EmptyList(Exception):
+    pass
+
+class Empty(Exception):
+    pass
+
+class Node(object):
+    def __init__(self, value, next = None):
+
+        self._value = value
+        self._next = next
+    
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def next(self):
+        return self._next
+
+    @value.setter
+    def value(self, value):
+        self._value = value
+
+    @next.setter
+    def next(self, next):
+        self._next = next
+
+    def __str__(self):
+        return str(self.value)
+
+class SinglyLinkedList(object):
+    def __init__(self):
+        self._head = None
+        self._tail = None
+        self._size = 0
+
+    def __len__(self):
+        return self._size
+
+    def is_empty(self):
+        return self._size == 0
+    
+    def __iter__(self):
+        current_node = self._head
+
+        while current_node:
+            yield current_node
+            current_node = current_node._next
+
+    def get_last(self):
+        if self.is_empty():
+            raise EmptyList("Lista je prazna")
+        return self._tail
+
+    def add_last(self, value):
+        new_node = Node(value)
+
+        if self.is_empty():
+            self._head = new_node
+        else:
+            self._tail.next = new_node
+        self._tail = new_node
+        self._size += 1
+
+    def remove_last(self):
+        if self.is_empty():
+            raise EmptyList("Lista je prazna")
+        if self._size == 1:
+            self._head = None
+        for node in self:
+            if node.next == self._tail:
+                node.next = None
+                self._tail = node
+                break
+        self._size -= 1
+
+
+
+
+
+
+
+
+
+
+
+import SinglyLinkedList
+class Error(Exception) - pass
+class Stack(object)
+Definisi: init, len, is_empty, push, top, pop
+def __init__(self)
+    self._data = SinglyLinkedList()
+
+def __len__(self)
+    return len(self._data)
+
+def is_empty(self)
+    return len(self._data) == 0
+
+def push(self,e)
+    self._data.add_last(e)
+
+def top(self)
+    if self.is_empty():
+        raise Error
+    return self._data.get_last()
+
+def pop(self)
+    if self.is_empty():
+        raise Error
+    el = self._data.get_last()
+    self._data.remove_last()
+    return el
+
+
+
+
+
+
+
+
+
+
+
+class EmptyList(Exception):
+    pass
+
+class Node:
+    def  __init__(self, value, next, previous):
+        self._value = value
+        self._next = next
+        self._previous = previous
+
+    @property
+    def value(self):
+        return self._value
+    
+    @value.setter
+    def value(self, value):
+        self._value = value
+    
+    @property
+    def next(self):
+        return self._next
+    
+    @next.setter
+    def next(self, next):
+        self._next = next
+    
+    @property
+    def previous(self):
+        return self._previous
+    
+    @previous.setter
+    def previous(self, previous):
+        self._previous = previous
+    
+    def __str__(self) -> str:
+        return str(self._value)
+
+    
+class DoublyLinkedList:
+    def __init__(self):
+        
+        self._size = 0
+        self._head = Node(None, None, None)
+        self._tail = Node(None, self._head, None)
+        self._head.next = self._tail
+    
+    def is_empty(self):
+        return self._size == 0
+
+    def __iter__(self):
+        current_node = self._head.next
+        while current_node != self._tail:
+            yield current_node
+            current_node = current_node.next
+
+    def __len__(self):
+        return self._size
+
+    def get_first(self):
+        if self.is_empty():
+            raise EmptyList("Lista je prazna")
+        return self._head.next
+
+    def get_last(self):
+        if self.is_empty():
+            raise EmptyList("Lista je prazna")
+        return self._tail.previous
+
+    def add_first(self, value):
+        node = Node(value, None, None)
+
+        if self.is_empty():
+            self._tail.previous = node
+        
+        else:
+            self._head.next.previous = node
+        node.next = self._head.next
+        node.previous = self._head
+        self._head.next = node
+        self._size += 1
+        return node
+    
+    def remove_first(self):
+        if self.is_empty:
+            raise EmptyList("Lista je prazna")
+        
+        if self._size == 1:
+            self._head.next = self._tail
+            self._tail.previous = self._head
+        
+        else:
+            new_first = self._head.next.next
+            self._head.next = new_first
+            new_first.previous = self._head
+        self._size -= 1
+
+    def insert_after(self, node1, value):
+        new_node = Node(value, node1, None)
+        node1.next.previous = new_node
+        new_node.next = node1.next
+        node1.next = new_node
+        new_node.previous = node1
+        self._size += 1
+        return new_node
+
+    def reverse(self):
+        trenutni = self._head
+        while(trenutni != None) :
+            temp = trenutni.next
+            trenutni.next = trenutni.previous
+            trenutni.previous = temp
+            trenutni = trenutni.previous
+        temp1 = self._head
+        self._head = self._tail
+        self._tail = temp1
+
+
+
+
+
+
+
+
+
+
+
+import Queue
+class TreeNode(object) - definisanje cvorova stabla
+    def __init__(self, data):
+        self.parent = None
+        self.children = []
+        self.data = data
+    
+    def is_root(self):
+        return self.parent is None
+
+    def is_leaf(self):
+        return len(self.children) == 0
+
+    def add_child(self, x):
+        x.parent = self
+        self.children.append(x)
+
+    
+class Tree(object) - definisanje stabla
+Definisi: __init__, is_empty, depth, height, preorder, postorder 
+    def __init__(self):
+        self.root = None
+    
+    def is_empty(self):
+        return self.root is None
+
+    def depth(self, x):
+        if x.is_root(): - Proveri da li je cvor koren
+            return 0 - Ako je koren vrati 0
+        else:    
+           return 1 + self.depth(x.parent) - Ako nije vrati 1 + dubinu cvora
+    
+    def height(self):
+        return self._height(self.root)
+
+    def preorder(self, x): 
+        if not self.is_empty():
+            print(x.data)
+            for c in x.children:
+                self.preorder(c)
+
+    def postorder(self, x):
+        if not self.is_empty():
+            for c in x.children
+                self.postorder(c)
+            print(x.data)
+
+
+    def breadth_first(self): - Obilazak stabla po sirini
+        to_visit = Queue()
+        to_visit.enqueue(self.root)
+        while not to_visit.is_empty():
+            e = to.visit.dequeue()
+            print(e.data)
+
+        for c in e.children:
+            to_visit.enqueue(c)
+
+
+
+
+
+
+
+
+
+
+
+
+class MapElement(object):
+
+    def __init__(self, key, value):
+        self._key = key
+        self._value = value
+    
+    Konstruktori:
+    @property
+    def key(self):
+        return self._key
+    @property value(self):
+        return self._value
+    @property value(self, new_value):
+        self._value = new_value
+
+
+class Map(object):
+Definisi: __init__, __getitem__, __setitem__, __delitem__, __len__, __containt__, __iter__
+    def __init__(self):
+        self._data = []
+    
+    def __getitem__(self, k):
+        for item in self._data:
+            if k == item.key:
+                return item.value
+        raise KeyError
+
+    def __setitem__(self, k, v):
+        for item in self._data:
+            if k == item.key:
+                item.value = v
+                return
+        self._data.append(MapElement(k, v))
+
+
+    def __delitem__(self, k):
+        length = len(self._data)
+        for i in range(length):
+            if k == self._data[i].key:
+                self._data.pop(i)
+                return
+        raise KeyError
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        for item in self._data:
+            yield item.key
+
+    def __contains__(self, k):
+        for key in self:
+            if k == key:
+                return True
+        return False
+
+
+
+
+
+
+
+
+
+
+
+def fibonacci_recursive(n):
+    if n == 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+    else:
+        fib = fibonacci_recursive(n-1)
+        fib.append(fib[-1] + fib[-2])
+        return fib
